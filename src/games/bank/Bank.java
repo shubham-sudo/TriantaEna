@@ -13,7 +13,7 @@ public class Bank {
         this.id = ++ID;
         this.accountSummary = new ArrayList<>();
         this.amount = initialAmount;
-        this.accountSummary.add(new Transaction("Initial Deposit", initialAmount));
+        this.accountSummary.add(new Transaction(" Initial Deposit ", initialAmount));
     }
 
     public Bank(){
@@ -26,15 +26,15 @@ public class Bank {
 
     public void credit(double amount){
         this.amount += amount;
-        this.accountSummary.add(new Transaction("Credited", +amount));
+        this.accountSummary.add(new Transaction(" Credited ", +amount));
     }
 
     public void debit(double amount){
         if (amount > this.amount){
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Not enough amount");
         }
         this.amount -= amount;
-        this.accountSummary.add(new Transaction("Debited", -amount));
+        this.accountSummary.add(new Transaction(" Debited ", -amount));
     }
 
     public String accountHistory(){

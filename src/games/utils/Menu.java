@@ -13,7 +13,7 @@ public class Menu {
     public static final ArrayList<String> HIT_STAND = new ArrayList<>(Arrays.asList(HIT, STAND));
     private static final Scanner scanner = PublicScanner.getScanner();
 
-    public static void header(String message){
+    public static void message(String message){
         System.out.println("\n**************** " + message + " ****************");
     }
 
@@ -30,7 +30,7 @@ public class Menu {
             validOptionString[i] = String.valueOf(validOptions.get(i));
         }
 
-        header(message);
+        message(message);
         do{
             try{
                 System.out.print("Please enter " + String.join("/", validOptionString) + " : ");
@@ -49,7 +49,7 @@ public class Menu {
     public static boolean getUserYesNo(String message, ArrayList<String> options, String trueChoice){
         String choice = null;
 
-        header(message);
+        message(message);
         do{
             try{
                 System.out.print("Please enter " + String.join("/", options) + " : ");
@@ -73,7 +73,7 @@ public class Menu {
 
     public static int getIntegerInput(String message){
         int option = 0;
-        header(message);
+        message(message);
         while (option <= 0){
             try{
                 System.out.print("Please enter : ");
@@ -91,7 +91,7 @@ public class Menu {
 
     public static double getDoubleInput(String message){
         double option = 0;
-        header(message);
+        message(message);
         while (option <= 0){
             try{
                 System.out.print("Please enter : ");
@@ -109,7 +109,7 @@ public class Menu {
 
     public static String getStringInput(String message){
         String input;
-        header(message);
+        message(message);
         while (true){
             System.out.print("Please enter : ");
             input = scanner.nextLine().trim();

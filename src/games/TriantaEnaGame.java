@@ -26,12 +26,11 @@ public class TriantaEnaGame implements Game {
         this(NUMDECKS);
     }
 
-    public void describe(){
+    public void introduce(){
         Menu.display("The objective of the game is to accumulate a hand of cards that equals 31 (Trianta ena!) \n" +
                 "or a hand that has a card value greater than that of the Dealers without exceeding 31. ");
     }
     public void initialize() {
-        describe();
         double eachPlayerAmount;
 
         eachPlayerAmount = Menu.getIntegerInput("Enter valid amount for one player");
@@ -53,12 +52,17 @@ public class TriantaEnaGame implements Game {
         play();
     }
     public void end() {
-        // TODO Auto-generated method stub
+        Menu.message("Thanks for Playing !!!");
+        for (TriantaEnaPlayer player : players){
+            Menu.message(player.name() + " transactions");
+            player.transactions();
+            Menu.footer();
+        }
     }
 
     private void hit(TriantaEnaPlayer player){
         TriantaEnaCard card = deck.drawCard();
-        player.inventory.addItem(card);
+        player.inventory().addItem(card);
         card.setFaceUp();
     }
 
@@ -67,11 +71,11 @@ public class TriantaEnaGame implements Game {
     }
 
     private boolean isBurst(TriantaEnaPlayer player){
-        return player.inventory.score() > 31 && player.inventory.minScore() > 31;
+        return player.inventory().score() > 31 && player.inventory().minScore() > 31;
     }
 
     private void faceUpPlayerCards(TriantaEnaPlayer player){
-        for (TriantaEnaCard card : player.inventory.cards()){
+        for (TriantaEnaCard card : player.inventory().cards()){
             card.setFaceUp();
         }
     }
@@ -80,7 +84,7 @@ public class TriantaEnaGame implements Game {
         boolean isFace = false;
         boolean anotherFace = false;
 
-        for (TriantaEnaCard card : player.inventory.cards()) {
+        for (TriantaEnaCard card : player.inventory().cards()) {
             if (card.isAce()) {
                 isAce = true;
             }
@@ -95,10 +99,10 @@ public class TriantaEnaGame implements Game {
     }
 
     private boolean isBankerScoreHigher(TriantaEnaPlayer player) {
-        double playerScore = player.inventory.score() < 31 ? player.inventory.score()
-                : player.inventory.minScore();
-        double bankerScore = banker.inventory.score() < 31 ? banker.inventory.score()
-                : banker.inventory.minScore();
+        double playerScore = player.inventory().score() < 31 ? player.inventory().score()
+                : player.inventory().minScore();
+        double bankerScore = banker.inventory().score() < 31 ? banker.inventory().score()
+                : banker.inventory().minScore();
         return bankerScore >= playerScore;
     }
     private void fillDeckWithCards() {
@@ -116,18 +120,32 @@ public class TriantaEnaGame implements Game {
 
     private void collectLastRoundCards() {
         for (TriantaEnaPlayer player : players) {
-            deck.addCards(player.inventory.cards());
-            player.inventory.reset();
+            deck.addCards(player.inventory().cards());
+            player.inventory().reset();
         }
-        deck.addCards(banker.inventory.cards());
-        banker.inventory.reset();
+        deck.addCards(banker.inventory().cards());
+        banker.inventory().reset();
     }
 
     private boolean canBePlayed() {
+        double totalAmount = 0;
+        boolean hasAmount = false;
+
         if (banker.amount() <= 0 || players.size() == 0) {
             return false;
         }
-        boolean hasAmount = false;
+
+        // check if banker has enough total amount
+        for (TriantaEnaPlayer player : players){
+            totalAmount += player.amount();
+        }
+
+        // if not then return false
+        if (totalAmount > banker.amount()){
+            return false;
+        }
+
+        // check if any player has amount more than zero
         for (TriantaEnaPlayer player : players) {
             if (player.amount() > 0) {
                 hasAmount = true;
@@ -153,27 +171,26 @@ public class TriantaEnaGame implements Game {
         }
     }
 
-
     private void playOneRound() {
 
         // player gets there first card face down
-        Menu.header("Drawing face down card to all players");
+        Menu.message("Drawing face down card to all players");
         for (TriantaEnaPlayer player : players) {
-            player.inventory.addItem(deck.drawCard());
+            player.inventory().addItem(deck.drawCard());
         }
 
-        Menu.header("Drawing face up card to banker");
+        Menu.message("Drawing face up card to banker");
         TriantaEnaCard bankerCard = deck.drawCard();
         bankerCard.setFaceUp();
-        banker.inventory.addItem(bankerCard);
-        banker.inventory.display(banker.name());
+        banker.inventory().addItem(bankerCard);
+        banker.inventory().display(banker.name());
 
         // placing bet
-        Menu.header("Get ready, time to place bets");
+        Menu.message("Get ready, time to place bets");
         ArrayList<TriantaEnaPlayer> skipPlayers = new ArrayList<>();
         for (TriantaEnaPlayer player : players) {
-            Menu.header(player.name() + " your turn!!!");
-            player.inventory.playerDisplay(player.name());
+            Menu.message(player.name() + " your turn!!!");
+            player.inventory().playerDisplay(player.name());
             boolean wannaBet = Menu.getUserYesNo(
                     player.name() + ", Do you wanna bet?", Menu.YES_NO_CHOICE, Menu.YES);
             if (wannaBet) {
@@ -192,79 +209,84 @@ public class TriantaEnaGame implements Game {
         Menu.footer();
 
         if (players.size() == skipPlayers.size()) {
-            Menu.header("No one placed the bet for this round!");
+            Menu.message("No one placed the bet for this round!");
             return;
         }
 
         // player receiving 2 more Cards
-        Menu.header("Time to get more Cards");
+        Menu.message("Time to get more Cards");
         for (TriantaEnaPlayer better : players) {
             if (!skipPlayers.contains(better)){
                 TriantaEnaCard card1 = deck.drawCard();
                 TriantaEnaCard card2 = deck.drawCard();
 
-                better.inventory.addItem(card1);
-                better.inventory.addItem(card2);
+                better.inventory().addItem(card1);
+                better.inventory().addItem(card2);
                 card1.setFaceUp();
                 card2.setFaceUp();
-                better.inventory.display(better.name());
+                better.inventory().display(better.name());
             }
         }
         Menu.footer();
 
         // Hit and Stand
-        Menu.header("Great! Now time to Hit or Stand");
+        Menu.message("Great! Now time to Hit or Stand");
         for (TriantaEnaPlayer better : players) {
             boolean isHit;
-            Menu.header(better.name() + " your turn!!!");
-            better.inventory.playerDisplay(better.name());
+            Menu.message(better.name() + " your turn!!!");
+            better.inventory().playerDisplay(better.name());
             isHit = Menu.getUserYesNo(better.name() + ", make your move", Menu.HIT_STAND, Menu.HIT);
 
             if (isHit){
-                while (isHit) {
+                while (isHit && !isBurst(better)) {
                     hit(better);
-                    better.inventory.playerDisplay(better.name());
+                    better.inventory().playerDisplay(better.name());
                     isHit = Menu.getUserYesNo(better.name() + ", make your move", Menu.HIT_STAND, Menu.HIT);
                 }
             } else {
                 stand(better);
             }
             if (isBurst(better)) {
-                Menu.header("uh-oh! " + better.name() + ", Your hand value burst!!");
-                better.inventory.display(better.name());
+                Menu.message("uh-oh! " + better.name() + ", Your hand value burst!!");
+                faceUpPlayerCards(better);
+                better.inventory().display(better.name());
                 banker.win(better.betValue());
-                better.loose(better.betValue());
+                better.resetBetValue();
                 skipPlayers.add(better);
             }
         }
         Menu.footer();
 
+        if (skipPlayers.size() == players.size()){
+            return;
+        }
+
         // Time to hit/stand for dealer
-        Menu.header("Awesome!, Lets see dealers move!");
-        while (banker.inventory.score() < 27) {
-            Menu.header("Banker Card before every HIT");
-            banker.inventory.display(banker.name());
+        Menu.message("Awesome!, Lets see dealers move!");
+        while (banker.inventory().score() < 27) {
+            Menu.message("Banker Card before every HIT");
+            banker.inventory().display(banker.name());
             TriantaEnaCard card = deck.drawCard();
-            banker.inventory.addItem(card);
+            banker.inventory().addItem(card);
             card.setFaceUp();
         }
         Menu.footer();
 
         // check if banker burst
         if (isBurst(banker)) {
-            Menu.header("uh-oh! " + banker.name() + ", Your hand value burst!!");
+            Menu.message("uh-oh! " + banker.name() + ", Your hand value burst!!");
             faceUpPlayerCards(banker);
-            banker.inventory.display(banker.name());
+            banker.inventory().display(banker.name());
 
             for (TriantaEnaPlayer better : players) {
                 if (!skipPlayers.contains(better)) {
-                    better.win(better.betValue());
+                    better.win(better.betValue()*2);
                     banker.loose(better.betValue());
                 }
             }
         } else {
             // Time to decide the winner of the round
-            Menu.header("Lets see who is WINNER of Trianta Ena!!!");
+            Menu.message("Lets see who is WINNER of Trianta Ena!!!");
             for (TriantaEnaPlayer player : players){
                 faceUpPlayerCards(player);
             }
@@ -273,16 +295,15 @@ public class TriantaEnaGame implements Game {
         }
     }
 
-
     private void declareWinnerOfRound(ArrayList<TriantaEnaPlayer> skipPlayers) {
         // If banker has the Natural TriantaEna
         if (isNaturalTriantaEna(banker)) {
-            Menu.header("Congratulations Natural TriantaEna!!, " + banker.name() + " You Won");
-            banker.inventory.display(banker.name());
+            Menu.message("Congratulations Natural TriantaEna!!, " + banker.name() + " You Won");
+            banker.inventory().display(banker.name());
             for (TriantaEnaPlayer player : players) {
                 if (!skipPlayers.contains(player)) {
                     banker.win(player.betValue());
-                    player.loose(player.betValue());
+                    player.resetBetValue();
                 }
             }
         } else {
@@ -290,9 +311,9 @@ public class TriantaEnaGame implements Game {
             for (TriantaEnaPlayer player : players) {
                 if (isNaturalTriantaEna(player) && !skipPlayers.contains(player)) {
                     skipPlayers.add(player);
-                    Menu.header("Congratulations Natural TriantaEna!!, " + player.name() + " You Won");
-                    player.inventory.display(player.name());
-                    player.win(player.betValue());
+                    Menu.message("Congratulations Natural TriantaEna!!, " + player.name() + " You Won");
+                    player.inventory().display(player.name());
+                    player.win(player.betValue()*2);
                     banker.loose(player.betValue());
                 }
             }
@@ -300,19 +321,19 @@ public class TriantaEnaGame implements Game {
             // check for highest value now
             for (TriantaEnaPlayer player : players) {
                 if (!skipPlayers.contains(player)) {
-                    if (banker.inventory.score() == 31 || banker.inventory.minScore() == 31
+                    if (banker.inventory().score() == 31 || banker.inventory().minScore() == 31
                             || isBankerScoreHigher(player)) {
                         skipPlayers.add(player);
-                        Menu.header("Congratulations!!, " + banker.name() + " You Won against " + player.name());
-                        banker.inventory.display(banker.name());
-                        player.inventory.display(player.name());
+                        Menu.message("Congratulations!!, " + banker.name() + " You Won against " + player.name());
+                        banker.inventory().display(banker.name());
+                        player.inventory().display(player.name());
                         banker.win(player.betValue());
-                        player.loose(player.betValue());
+                        player.resetBetValue();
                     } else {
                         System.out.println("Congratulations!!, " + player.name() + " You Won against " + banker.name());
-                        player.inventory.display(player.name());
-                        banker.inventory.display(banker.name());
-                        player.win(player.betValue());
+                        player.inventory().display(player.name());
+                        banker.inventory().display(banker.name());
+                        player.win(player.betValue()*2);
                         banker.loose(player.betValue());
                     }
                 }
@@ -320,15 +341,47 @@ public class TriantaEnaGame implements Game {
         }
     }
 
+    private void resetPlayersInventory(){
+        banker.inventory().reset();
+        for(TriantaEnaPlayer player : players){
+            player.inventory().reset();
+        }
+    }
+
+    private void resetPlayersBet(){
+        banker.resetBetValue();
+        for (TriantaEnaPlayer player : players){
+            player.resetBetValue();
+        }
+    }
+
+    private void cashOutCheck(){
+        ArrayList<TriantaEnaPlayer> cashOutPlayers = new ArrayList<>();
+        for (TriantaEnaPlayer player : players){
+            boolean wannaCashOut = Menu.getUserYesNo(player.name() + ", Wanna Cash Out?", Menu.YES_NO_CHOICE, Menu.YES);
+            if (wannaCashOut){
+                cashOutPlayers.add(player);
+            }
+        }
+        for (TriantaEnaPlayer cashOutPlayer : cashOutPlayers){
+            Menu.message(cashOutPlayer.name() + " : dropping off!");
+            Menu.message(cashOutPlayer.name() + " transactions");
+            cashOutPlayer.transactions();
+            Menu.footer();
+            players.remove(cashOutPlayer);
+        }
+    }
+
     private void play() {
-        while (canBePlayed()) {
-            switchBanker(); // this will not happend first time
+        while (canBePlayed()) { // check if banker & players has enough amount
+            switchBanker(); // this will not happen first time
             collectLastRoundCards(); // do it before every round
-            deck.shuffle();
-            playOneRound();
-//            resetPlayersInventory();  // TODO implement
-//            resetPlayerBets();  // TODO implement
+            deck.shuffle(); // shuffle the deck before each round
+            playOneRound();  // play one round of Trianta Ena.
+            resetPlayersInventory();  // reset everyone's inventory after each round
+            resetPlayersBet();  // reset every player bet value to zero.
             Collections.sort(players); // sort based on amount
+            cashOutCheck(); // check if player want to cash out
         }
     }
 }

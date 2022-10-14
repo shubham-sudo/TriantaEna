@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class TriantaEnaCard extends Card {
     private boolean isFaceUp = false;
     public static final String[] faceValues = new String[] {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Q", "J", "K" };
-    public static final HashMap<String, Integer> faceValueToValue = new HashMap<>() {
+    public static final HashMap<String, Integer> faceValueToValue = new HashMap<String, Integer>() {
         {
             put("2", 2);
             put("3", 3);

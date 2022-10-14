@@ -1,7 +1,7 @@
 package games;
 
 public interface Game{
-    void describe();
+    void introduce();
     void initialize();
     void start();
     void end();

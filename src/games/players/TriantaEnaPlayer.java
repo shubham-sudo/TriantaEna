@@ -4,7 +4,7 @@ import games.bank.Bank;
 import games.inventory.TriantaEnaPlayerInventory;
 
 public class TriantaEnaPlayer extends Player implements Comparable<TriantaEnaPlayer> {
-    public final TriantaEnaPlayerInventory inventory;
+    private final TriantaEnaPlayerInventory inventory;
     private final Bank bank;
 //    private double amount;
     private double betValue;
@@ -15,12 +15,20 @@ public class TriantaEnaPlayer extends Player implements Comparable<TriantaEnaPla
         this.inventory = new TriantaEnaPlayerInventory();
     }
 
+    public TriantaEnaPlayerInventory inventory(){
+        return this.inventory;
+    }
+
     public TriantaEnaPlayer(String name){
         this(name, 0);
     }
 
     public double amount(){
         return this.bank.amount();
+    }
+
+    public void transactions(){
+        System.out.println(this.bank.accountHistory());
     }
 
     public boolean canPlaceBet(double amount){
@@ -37,13 +45,13 @@ public class TriantaEnaPlayer extends Player implements Comparable<TriantaEnaPla
     }
 
     public void loose(double amount){
-        System.out.println(amount + " $ deducted from " + this.name() + "'s Account");
         this.bank.debit(amount);
+        System.out.println(amount + " $ deducted from " + this.name() + "'s Account");
     }
 
     public void win(double amount){
-        System.out.println(amount*2 + " $ credited to " + this.name() + "'s Account");
-        this.bank.credit(amount * 2);
+        this.bank.credit(amount);
+        System.out.println(amount + " $ credited to " + this.name() + "'s Account");
     }
 
     public void resetBetValue() {

@@ -6,7 +6,6 @@ public abstract class Card {
 
     protected final String faceValue;
     protected final Suit suit;
-    private boolean isAvailable = true;
 
     public Card(String faceValue, Suit suit) {
         this.id = ++ID;

@@ -17,6 +17,7 @@ The UML diagram (uml.png) shows the relation between below classes
 4) The Suit is an enum used for defining all the 52 Deck Card Suits.
 5) Deck is a Generic class which extends any Card class or its child classes.
 6) Bank is a class which takes care of all the transactions for the player happening in the game.
+   The balance can go to negative for any one round. The player won't be able to play in next round.
 7) Game is an interface which gives and interface to any Game child class
 
 Now How the Trianta Ena Game formed with the above structure
@@ -84,10 +85,292 @@ the game, and it can be reused to any game now.
 
 ## How to compile and run
 ---------------------------------------------------------------------------
-1. Navigate to the directory "code/pa2" after unzipping the files
+1. Navigate to the directory "TriantaEnaGame" after unzipping the files
 2. Run the following instructions:
-javac -d bin src/Common/*.java src/Validators/*.java src/*.java
-java -cp bin Main
+javac -d bin src/games/bank/*.java src/games/cards/*.java src/games/inventory/*.java src/games/players/*.java src/games/utils/*.java src/games/*.java
+java -cp bin games.Main
 
 ## Input/Output Example
 ---------------------------------------------------------------------------
+Welcome!
+Lets play TriantaEnaGame Today
+************************************************
+The objective of the game is to accumulate a hand of cards that equals 31 (Trianta ena!)
+or a hand that has a card value greater than that of the Dealers without exceeding 31.
+************************************************
+
+**************** Enter valid amount for one player ****************
+Please enter : 100
+************************************************
+
+**************** Enter banker name ****************
+Please enter : Shubham
+************************************************
+
+**************** Enter player [1] name ****************
+Please enter : John
+************************************************
+
+**************** Do You wanna add more players? ****************
+Please enter YES/NO : yes
+************************************************
+
+**************** Enter player [2] name ****************
+Please enter : Jancy
+************************************************
+
+**************** Do You wanna add more players? ****************
+Please enter YES/NO : no
+************************************************
+
+**************** Drawing face down card to all players ****************
+
+**************** Drawing face up card to banker ****************
+**************** Shubham Cards ****************
+	Card[id=86, faceValue=9, suit=♦]
+**********************************************
+
+**************** Get ready, time to place bets ****************
+
+**************** John your turn!!! ****************
+**************** John Cards ****************
+	Card[id=13, faceValue=4, suit=♣]
+**********************************************
+
+**************** John, Do you wanna bet? ****************
+Please enter YES/NO : yes
+************************************************
+
+**************** Enter the valid bet amount ****************
+Please enter : 200
+************************************************
+Invalid amount!, Try again
+
+**************** Enter the valid bet amount ****************
+Please enter : 80
+************************************************
+
+**************** Jancy your turn!!! ****************
+**************** Jancy Cards ****************
+	Card[id=73, faceValue=6, suit=♣]
+**********************************************
+
+**************** Jancy, Do you wanna bet? ****************
+Please enter YES/NO : yes
+************************************************
+
+**************** Enter the valid bet amount ****************
+Please enter : 50
+************************************************
+************************************************
+
+**************** Time to get more Cards ****************
+**************** John Cards ****************
+	Hidden Card[id=13, faceValue=***, suit=***]
+	Card[id=7, faceValue=2, suit=♥]
+	Card[id=57, faceValue=2, suit=♣]
+**********************************************
+**************** Jancy Cards ****************
+	Hidden Card[id=73, faceValue=***, suit=***]
+	Card[id=9, faceValue=3, suit=♣]
+	Card[id=60, faceValue=2, suit=♠]
+**********************************************
+************************************************
+
+**************** Great! Now time to Hit or Stand ****************
+
+**************** John your turn!!! ****************
+**************** John Cards ****************
+	Card[id=13, faceValue=4, suit=♣]
+	Card[id=7, faceValue=2, suit=♥]
+	Card[id=57, faceValue=2, suit=♣]
+**********************************************
+
+**************** John, make your move ****************
+Please enter HIT/STAND : hit
+************************************************
+**************** John Cards ****************
+	Card[id=13, faceValue=4, suit=♣]
+	Card[id=7, faceValue=2, suit=♥]
+	Card[id=57, faceValue=2, suit=♣]
+	Card[id=15, faceValue=4, suit=♥]
+**********************************************
+
+**************** John, make your move ****************
+Please enter HIT/STAND : hit
+************************************************
+**************** John Cards ****************
+	Card[id=13, faceValue=4, suit=♣]
+	Card[id=7, faceValue=2, suit=♥]
+	Card[id=57, faceValue=2, suit=♣]
+	Card[id=15, faceValue=4, suit=♥]
+	Card[id=2, faceValue=A, suit=♦]
+**********************************************
+
+**************** John, make your move ****************
+Please enter HIT/STAND : hit
+************************************************
+**************** John Cards ****************
+	Card[id=13, faceValue=4, suit=♣]
+	Card[id=7, faceValue=2, suit=♥]
+	Card[id=57, faceValue=2, suit=♣]
+	Card[id=15, faceValue=4, suit=♥]
+	Card[id=2, faceValue=A, suit=♦]
+	Card[id=103, faceValue=K, suit=♥]
+**********************************************
+
+**************** John, make your move ****************
+Please enter HIT/STAND : hit
+************************************************
+**************** John Cards ****************
+	Card[id=13, faceValue=4, suit=♣]
+	Card[id=7, faceValue=2, suit=♥]
+	Card[id=57, faceValue=2, suit=♣]
+	Card[id=15, faceValue=4, suit=♥]
+	Card[id=2, faceValue=A, suit=♦]
+	Card[id=103, faceValue=K, suit=♥]
+	Card[id=66, faceValue=4, suit=♦]
+**********************************************
+
+**************** John, make your move ****************
+Please enter HIT/STAND : stand
+************************************************
+
+**************** Jancy your turn!!! ****************
+**************** Jancy Cards ****************
+	Card[id=73, faceValue=6, suit=♣]
+	Card[id=9, faceValue=3, suit=♣]
+	Card[id=60, faceValue=2, suit=♠]
+**********************************************
+
+**************** Jancy, make your move ****************
+Please enter HIT/STAND : hit
+************************************************
+**************** Jancy Cards ****************
+	Card[id=73, faceValue=6, suit=♣]
+	Card[id=9, faceValue=3, suit=♣]
+	Card[id=60, faceValue=2, suit=♠]
+	Card[id=44, faceValue=Q, suit=♠]
+**********************************************
+
+**************** Jancy, make your move ****************
+Please enter HIT/STAND : hit
+************************************************
+**************** Jancy Cards ****************
+	Card[id=73, faceValue=6, suit=♣]
+	Card[id=9, faceValue=3, suit=♣]
+	Card[id=60, faceValue=2, suit=♠]
+	Card[id=44, faceValue=Q, suit=♠]
+	Card[id=92, faceValue=10, suit=♠]
+**********************************************
+
+**************** Jancy, make your move ****************
+Please enter HIT/STAND : stand
+************************************************
+************************************************
+
+**************** Awesome!, Lets see dealers move! ****************
+
+**************** Banker Card before every HIT ****************
+**************** Shubham Cards ****************
+	Card[id=86, faceValue=9, suit=♦]
+**********************************************
+
+**************** Banker Card before every HIT ****************
+**************** Shubham Cards ****************
+	Card[id=86, faceValue=9, suit=♦]
+	Card[id=96, faceValue=Q, suit=♠]
+**********************************************
+************************************************
+
+**************** Lets see who is WINNER of Trianta Ena!!! ****************
+
+**************** Congratulations!!, Shubham You Won against John ****************
+**************** Shubham Cards ****************
+	Card[id=86, faceValue=9, suit=♦]
+	Card[id=96, faceValue=Q, suit=♠]
+	Card[id=45, faceValue=J, suit=♣]
+**********************************************
+**************** John Cards ****************
+	Card[id=13, faceValue=4, suit=♣]
+	Card[id=7, faceValue=2, suit=♥]
+	Card[id=57, faceValue=2, suit=♣]
+	Card[id=15, faceValue=4, suit=♥]
+	Card[id=2, faceValue=A, suit=♦]
+	Card[id=103, faceValue=K, suit=♥]
+	Card[id=66, faceValue=4, suit=♦]
+**********************************************
+80.0 $ credited to Shubham's Account
+Congratulations!!, Jancy You Won against Shubham
+**************** Jancy Cards ****************
+	Card[id=73, faceValue=6, suit=♣]
+	Card[id=9, faceValue=3, suit=♣]
+	Card[id=60, faceValue=2, suit=♠]
+	Card[id=44, faceValue=Q, suit=♠]
+	Card[id=92, faceValue=10, suit=♠]
+**********************************************
+**************** Shubham Cards ****************
+	Card[id=86, faceValue=9, suit=♦]
+	Card[id=96, faceValue=Q, suit=♠]
+	Card[id=45, faceValue=J, suit=♣]
+**********************************************
+100.0 $ credited to Jancy's Account
+50.0 $ deducted from Shubham's Account
+
+**************** John, Wanna Cash Out? ****************
+Please enter YES/NO : yes
+************************************************
+
+**************** Jancy, Wanna Cash Out? ****************
+Please enter YES/NO : no
+************************************************
+
+**************** John : dropping off! ****************
+
+**************** John transactions ****************
+Transaction[Action:  Initial Deposit Value: 100.0]
+Transaction[Action:  Debited Value: -80.0]
+************************************************
+
+**************** Drawing face down card to all players ****************
+
+**************** Drawing face up card to banker ****************
+**************** Shubham Cards ****************
+	Card[id=38, faceValue=10, suit=♦]
+**********************************************
+
+**************** Get ready, time to place bets ****************
+
+**************** Jancy your turn!!! ****************
+**************** Jancy Cards ****************
+	Card[id=32, faceValue=8, suit=♠]
+**********************************************
+
+**************** Jancy, Do you wanna bet? ****************
+Please enter YES/NO : no
+************************************************
+************************************************
+
+**************** No one placed the bet for this round! ****************
+
+**************** Jancy, Wanna Cash Out? ****************
+Please enter YES/NO : yes
+************************************************
+
+**************** Jancy : dropping off! ****************
+
+**************** Jancy transactions ****************
+Transaction[Action:  Initial Deposit Value: 100.0]
+Transaction[Action:  Debited Value: -50.0]
+Transaction[Action:  Credited Value: 100.0]
+************************************************
+
+**************** Either banker is out of cash or all players left!! ****************
+
+**************** Thanks for Playing !!! ****************
+
+**************** Shubham transactions ****************
+Transaction[Action:  Initial Deposit Value: 300.0]
+Transaction[Action:  Credited Value: 80.0]
+Transaction[Action:  Debited Value: -50.0]
+************************************************

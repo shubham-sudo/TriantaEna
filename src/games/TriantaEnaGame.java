@@ -83,6 +83,9 @@ public class TriantaEnaGame implements Game {
             player.transactions();
             Menu.footer();
         }
+        Menu.message(banker.name() + " transactions");
+        banker.transactions();
+        Menu.footer();
     }
 
     /**
@@ -200,20 +203,10 @@ public class TriantaEnaGame implements Game {
      * @return true if it can be played for next round, false otherwise
      */
     private boolean canBePlayed() {
-        double totalAmount = 0;
         boolean hasAmount = false;
 
         if (banker.amount() <= 0 || players.size() == 0) {
-            return false;
-        }
-
-        // check if banker has enough total amount
-        for (TriantaEnaPlayer player : players){
-            totalAmount += player.amount();
-        }
-
-        // if not then return false
-        if (totalAmount > banker.amount()){
+            Menu.message("Either banker is out of cash or all players left!!");
             return false;
         }
 
@@ -223,6 +216,11 @@ public class TriantaEnaGame implements Game {
                 hasAmount = true;
             }
         }
+
+        if (!hasAmount){
+            Menu.message("None of the player has positive bank balance!!");
+        }
+
         return hasAmount;
     }
 
@@ -268,21 +266,23 @@ public class TriantaEnaGame implements Game {
         Menu.message("Get ready, time to place bets");
         ArrayList<TriantaEnaPlayer> skipPlayers = new ArrayList<>();
         for (TriantaEnaPlayer player : players) {
-            Menu.message(player.name() + " your turn!!!");
-            player.inventory().playerDisplay(player.name());
-            boolean wannaBet = Menu.getUserYesNo(
-                    player.name() + ", Do you wanna bet?", Menu.YES_NO_CHOICE, Menu.YES);
-            if (wannaBet) {
-                while (true) {
-                    try {
-                        player.placeBet(Menu.getDoubleInput("Enter the valid bet amount"));
-                        break;
-                    } catch (Exception e) {
-                        System.out.println("Invalid amount!, Try again");
+            if (!skipPlayers.contains(player)) {
+                Menu.message(player.name() + " your turn!!!");
+                player.inventory().playerDisplay(player.name());
+                boolean wannaBet = Menu.getUserYesNo(
+                        player.name() + ", Do you wanna bet?", Menu.YES_NO_CHOICE, Menu.YES);
+                if (wannaBet) {
+                    while (true) {
+                        try {
+                            player.placeBet(Menu.getDoubleInput("Enter the valid bet amount"));
+                            break;
+                        } catch (Exception e) {
+                            System.out.println("Invalid amount!, Try again");
+                        }
                     }
+                } else {
+                    skipPlayers.add(player);
                 }
-            } else {
-                skipPlayers.add(player);
             }
         }
         Menu.footer();
@@ -311,33 +311,36 @@ public class TriantaEnaGame implements Game {
         // Hit and Stand
         Menu.message("Great! Now time to Hit or Stand");
         for (TriantaEnaPlayer better : players) {
-            boolean isHit;
-            Menu.message(better.name() + " your turn!!!");
-            better.inventory().playerDisplay(better.name());
-            isHit = Menu.getUserYesNo(better.name() + ", make your move", Menu.HIT_STAND, Menu.HIT);
+            if (!skipPlayers.contains(better)) {
+                boolean isHit;
+                Menu.message(better.name() + " your turn!!!");
+                better.inventory().playerDisplay(better.name());
+                isHit = Menu.getUserYesNo(better.name() + ", make your move", Menu.HIT_STAND, Menu.HIT);
 
-            if (isHit){
-                while (isHit && !isBurst(better)) {
-                    hit(better);
-                    better.inventory().playerDisplay(better.name());
-                    isHit = Menu.getUserYesNo(better.name() + ", make your move", Menu.HIT_STAND, Menu.HIT);
+                if (isHit) {
+                    while (isHit && !isBurst(better)) {
+                        hit(better);
+                        better.inventory().playerDisplay(better.name());
+                        isHit = Menu.getUserYesNo(better.name() + ", make your move", Menu.HIT_STAND, Menu.HIT);
+                    }
+                } else {
+                    stand(better);
                 }
-            } else {
-                stand(better);
-            }
-            if (isBurst(better)) {
-                Menu.message("uh-oh! " + better.name() + ", Your hand value burst!!");
-                faceUpPlayerCards(better);
-                better.inventory().display(better.name());
-                banker.win(better.betValue());
-                better.resetBetValue();
-                skipPlayers.add(better);
+                if (isBurst(better)) {
+                    Menu.message("uh-oh! " + better.name() + ", Your hand value burst!!");
+                    faceUpPlayerCards(better);
+                    better.inventory().display(better.name());
+                    banker.win(better.betValue());
+                    better.resetBetValue();
+                    skipPlayers.add(better);
+                }
             }
         }
         Menu.footer();
 
         // If all players are burst
         if (skipPlayers.size() == players.size()){
+            Menu.message("All players bursted in this round");
             return;
         }
 
@@ -395,7 +398,7 @@ public class TriantaEnaGame implements Game {
         } else {
             // check for every player
             for (TriantaEnaPlayer player : players) {
-                if (isNaturalTriantaEna(player) && !skipPlayers.contains(player)) {
+                if (!skipPlayers.contains(player) && isNaturalTriantaEna(player)) {
                     skipPlayers.add(player);
                     Menu.message("Congratulations Natural TriantaEna!!, " + player.name() + " You Won");
                     player.inventory().display(player.name());
@@ -472,14 +475,14 @@ public class TriantaEnaGame implements Game {
      */
     private void play() {
         while (canBePlayed()) { // check if banker & players has enough amount
-            switchBanker(); // this will not happen first time
-            collectLastRoundCards(); // do it before every round
             deck.shuffle(); // shuffle the deck before each round
             playOneRound();  // play one round of Trianta Ena.
             resetPlayersInventory();  // reset everyone's inventory after each round
             resetPlayersBet();  // reset every player bet value to zero.
             Collections.sort(players); // sort based on amount
             cashOutCheck(); // check if player want to cash out
+            switchBanker(); // check if someone with more money want to be banker
+            collectLastRoundCards(); // do it before every round
         }
     }
 }

@@ -5,31 +5,47 @@ import games.cards.TriantaEnaCard;
 import games.players.TriantaEnaPlayer;
 import games.utils.Menu;
 
-
 import java.util.*;
 
 public class TriantaEnaGame implements Game {
     private static final int MAX_PLAYER_LIMIT = 9;
     private static final int NUMDECKS = 2;
+    private static final int BURST_VALUE = 31;
     private final int numOfCardDecks;
     private final ArrayList<TriantaEnaPlayer> players;
     private TriantaEnaPlayer banker;
     private final Deck<TriantaEnaCard> deck;
 
+    /**
+     * Create an object of TriantaEnaGame class
+     *
+     * @param numOfCardDecks the size of deck to be used
+     */
     public TriantaEnaGame(int numOfCardDecks) {
         this.numOfCardDecks = numOfCardDecks;
         players = new ArrayList<>();
         deck = new Deck<>();
     }
 
+    /**
+     * Create an object of TriantaEnaGame
+     * using default size of deck
+     */
     public TriantaEnaGame() {
         this(NUMDECKS);
     }
 
+    /**
+     * Print a brief description about the game
+     */
     public void introduce(){
         Menu.display("The objective of the game is to accumulate a hand of cards that equals 31 (Trianta ena!) \n" +
                 "or a hand that has a card value greater than that of the Dealers without exceeding 31. ");
     }
+
+    /**
+     * Initialize the Players and fill the deck with cards
+     */
     public void initialize() {
         double eachPlayerAmount;
 
@@ -48,9 +64,18 @@ public class TriantaEnaGame implements Game {
         }
         fillDeckWithCards();
     }
+
+    /**
+     * Start the game
+     */
     public void start() {
         play();
     }
+
+    /**
+     * End the game and print all the transactions
+     * happened for the existing players
+     */
     public void end() {
         Menu.message("Thanks for Playing !!!");
         for (TriantaEnaPlayer player : players){
@@ -60,25 +85,53 @@ public class TriantaEnaGame implements Game {
         }
     }
 
+    /**
+     * Draw a new card and add to players inventory when play make a hit
+     *
+     * @param player player who want to make a hit move
+     */
     private void hit(TriantaEnaPlayer player){
         TriantaEnaCard card = deck.drawCard();
         player.inventory().addItem(card);
         card.setFaceUp();
     }
 
+    /**
+     * Face up the cards of the player who want to stand
+     *
+     * @param player player who want to make stand move
+     */
     private void stand(TriantaEnaPlayer player){
         faceUpPlayerCards(player);
     }
 
+    /**
+     * Check if the player total value is above the BURST_VALUE, to check burst
+     *
+     * @param player player
+     * @return true if bursting, false otherwise
+     */
     private boolean isBurst(TriantaEnaPlayer player){
-        return player.inventory().score() > 31 && player.inventory().minScore() > 31;
+        return player.inventory().score() > BURST_VALUE && player.inventory().minScore() > BURST_VALUE;
     }
 
+    /**
+     * Face up all the cards of the player
+     *
+     * @param player player
+     */
     private void faceUpPlayerCards(TriantaEnaPlayer player){
         for (TriantaEnaCard card : player.inventory().cards()){
             card.setFaceUp();
         }
     }
+
+    /**
+     * Check if the player has NaturalTriantaEna cards in Inventory
+     *
+     * @param player player
+     * @return true of NaturalTriantaEna condition satisfied, false otherwise
+     */
     private boolean isNaturalTriantaEna(TriantaEnaPlayer player) {
         boolean isAce = false;
         boolean isFace = false;
@@ -98,13 +151,23 @@ public class TriantaEnaGame implements Game {
         return isAce && isFace && anotherFace;
     }
 
+    /**
+     * Check if banker score is higher than the player
+     *
+     * @param player player playing against banker
+     * @return true if banker score value is higher, false otherwise
+     */
     private boolean isBankerScoreHigher(TriantaEnaPlayer player) {
-        double playerScore = player.inventory().score() < 31 ? player.inventory().score()
+        double playerScore = player.inventory().score() < BURST_VALUE ? player.inventory().score()
                 : player.inventory().minScore();
-        double bankerScore = banker.inventory().score() < 31 ? banker.inventory().score()
+        double bankerScore = banker.inventory().score() < BURST_VALUE ? banker.inventory().score()
                 : banker.inventory().minScore();
         return bankerScore >= playerScore;
     }
+
+    /**
+     * Fill the deck with cards (count will be equals to numOfCardDecks)
+     */
     private void fillDeckWithCards() {
         for (int i = 0; i < numOfCardDecks; i++) {
             Stack<TriantaEnaCard> oneDeck = new Stack<>();
@@ -118,6 +181,9 @@ public class TriantaEnaGame implements Game {
         }
     }
 
+    /**
+     * Collect all previous round cards from players
+     */
     private void collectLastRoundCards() {
         for (TriantaEnaPlayer player : players) {
             deck.addCards(player.inventory().cards());
@@ -127,6 +193,12 @@ public class TriantaEnaGame implements Game {
         banker.inventory().reset();
     }
 
+    /**
+     * Check if game can be played for next round
+     * This check for banker & players bank balance
+     *
+     * @return true if it can be played for next round, false otherwise
+     */
     private boolean canBePlayed() {
         double totalAmount = 0;
         boolean hasAmount = false;
@@ -154,6 +226,10 @@ public class TriantaEnaGame implements Game {
         return hasAmount;
     }
 
+    /**
+     * Ask player who have more money to be the banker
+     * If yes switch banker and that player
+     */
     private void switchBanker() {
         for(TriantaEnaPlayer player : players){
             if (player.amount() < banker.amount()){
@@ -171,6 +247,9 @@ public class TriantaEnaGame implements Game {
         }
     }
 
+    /**
+     * Play one full round of TriantaEna
+     */
     private void playOneRound() {
 
         // player gets there first card face down
@@ -257,6 +336,7 @@ public class TriantaEnaGame implements Game {
         }
         Menu.footer();
 
+        // If all players are burst
         if (skipPlayers.size() == players.size()){
             return;
         }
@@ -295,6 +375,12 @@ public class TriantaEnaGame implements Game {
         }
     }
 
+    /**
+     * Decide who is the winner for this one round and
+     * do the transactions wherever required
+     *
+     * @param skipPlayers skip players who were burst or denied for bet
+     */
     private void declareWinnerOfRound(ArrayList<TriantaEnaPlayer> skipPlayers) {
         // If banker has the Natural TriantaEna
         if (isNaturalTriantaEna(banker)) {
@@ -321,7 +407,7 @@ public class TriantaEnaGame implements Game {
             // check for highest value now
             for (TriantaEnaPlayer player : players) {
                 if (!skipPlayers.contains(player)) {
-                    if (banker.inventory().score() == 31 || banker.inventory().minScore() == 31
+                    if (banker.inventory().score() == BURST_VALUE || banker.inventory().minScore() == BURST_VALUE
                             || isBankerScoreHigher(player)) {
                         skipPlayers.add(player);
                         Menu.message("Congratulations!!, " + banker.name() + " You Won against " + player.name());
@@ -341,6 +427,9 @@ public class TriantaEnaGame implements Game {
         }
     }
 
+    /**
+     * Reset every player inventory
+     */
     private void resetPlayersInventory(){
         banker.inventory().reset();
         for(TriantaEnaPlayer player : players){
@@ -348,6 +437,9 @@ public class TriantaEnaGame implements Game {
         }
     }
 
+    /**
+     * Reset every player bet
+     */
     private void resetPlayersBet(){
         banker.resetBetValue();
         for (TriantaEnaPlayer player : players){
@@ -355,6 +447,9 @@ public class TriantaEnaGame implements Game {
         }
     }
 
+    /**
+     * Ask if anyone want to cash out or drop the game
+     */
     private void cashOutCheck(){
         ArrayList<TriantaEnaPlayer> cashOutPlayers = new ArrayList<>();
         for (TriantaEnaPlayer player : players){
@@ -372,6 +467,9 @@ public class TriantaEnaGame implements Game {
         }
     }
 
+    /**
+     * Play several rounds of the game
+     */
     private void play() {
         while (canBePlayed()) { // check if banker & players has enough amount
             switchBanker(); // this will not happen first time

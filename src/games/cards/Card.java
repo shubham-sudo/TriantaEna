@@ -3,7 +3,6 @@ package games.cards;
 public abstract class Card {
     private static int ID = 0;
     protected final int id;
-
     protected final String faceValue;
     protected final Suit suit;
 

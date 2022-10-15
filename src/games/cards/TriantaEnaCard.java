@@ -22,23 +22,46 @@ public class TriantaEnaCard extends Card {
         }
     };
 
+    /**
+     * Create new TriantaEna card
+     *
+     * @param faceValue face value of the card
+     * @param suit suit it belongs to
+     */
     public TriantaEnaCard(String faceValue, Suit suit) {
         super(faceValue, suit);
     }
 
+    /**
+     * Is case visible to everyone
+     *
+     * @return true if not hidden, false otherwise
+     */
     public boolean isFaceUp() {
         return isFaceUp;
     }
 
+    /**
+     * Set card visible to everyone
+     */
     public void setFaceUp() {
         this.isFaceUp = true;
     }
 
-
+    /**
+     * Check if card is ace "A"
+     *
+     * @return true if Ace, false otherwise
+     */
     public boolean isAce() {
         return this.faceValue == "A";
     }
 
+    /**
+     * Face value of the TriantaEna card
+     *
+     * @return integer face value of the card
+     */
     @Override
     public int value() {
         if (isAce()) {
@@ -47,6 +70,11 @@ public class TriantaEnaCard extends Card {
         return faceValueToValue.get(this.faceValue);
     }
 
+    /**
+     * Minimum face value we can use for the card
+     *
+     * @return min face value of the card
+     */
     public int minValue() {
         if (isAce()) {
             return 1;
@@ -54,6 +82,11 @@ public class TriantaEnaCard extends Card {
         return faceValueToValue.get(this.faceValue);
     }
 
+    /**
+     * String representation of the hidden cards
+     *
+     * @return string value
+     */
     public String hiddenString(){
         return "Hidden Card[id=" + this.id + ", faceValue=***, suit=***]";
     }

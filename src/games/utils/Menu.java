@@ -21,31 +21,14 @@ public class Menu {
         System.out.println("************************************************");
     }
 
-    public static int getUserIntInput(String message, ArrayList<Integer> validOptions){
-        int option = 0;
-        String[] validOptionString = new String[validOptions.size()];
-
-        for (int i = 0; i < validOptions.size(); i++){
-            option += validOptions.get(i);
-            validOptionString[i] = String.valueOf(validOptions.get(i));
-        }
-
-        message(message);
-        do{
-            try{
-                System.out.print("Please enter " + String.join("/", validOptionString) + " : ");
-                option = Integer.parseInt(scanner.nextLine().trim());
-            }catch (Exception e){
-                System.out.println(INVALID_INPUT_TRY_AGAIN);
-            }
-            if (!validOptions.contains(option)){
-                System.out.println(INVALID_CHOICE_TRY_AGAIN);
-            }
-        } while (!validOptions.contains(option));
-        footer();
-        return option;
-    }
-
+    /**
+     * Ask user for selecting from the given options and compare with true value
+     *
+     * @param message message to print to ask for input
+     * @param options options to show or validate the entered value
+     * @param trueChoice true value to return true
+     * @return true if value matches with trueChoice, false otherwise
+     */
     public static boolean getUserYesNo(String message, ArrayList<String> options, String trueChoice){
         String choice = null;
 
@@ -71,6 +54,12 @@ public class Menu {
         footer();
     }
 
+    /**
+     * Get integer input from the user
+     *
+     * @param message message to show for asking input
+     * @return entered value by the user
+     */
     public static int getIntegerInput(String message){
         int option = 0;
         message(message);
@@ -89,6 +78,12 @@ public class Menu {
         return option;
     }
 
+    /**
+     * Ask for double type value from the user
+     *
+     * @param message message to show for asking input
+     * @return value entered by user.
+     */
     public static double getDoubleInput(String message){
         double option = 0;
         message(message);
@@ -107,6 +102,12 @@ public class Menu {
         return option;
     }
 
+    /**
+     * Ask for String input from the user
+     *
+     * @param message message to show for asking input from user
+     * @return valid value entered by user
+     */
     public static String getStringInput(String message){
         String input;
         message(message);
